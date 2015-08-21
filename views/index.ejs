@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Files</title>
+    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css'/>
+    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap-theme.css'/>
+    <link rel='stylesheet' href='bower_components/datatables/media/css/dataTables.bootstrap.min.css'/>
+    <link rel='stylesheet' href='bower_components/datatables/media/css/dataTables.jqueryui.min.css'/>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Files</h1>
+    <div id="app"></div>
+
+    <script type="text/jsx">
+      var files = <%- JSON.stringify(files) %>;
+    </script>
+
+    <script type="text/jsx" src="javascripts/app.js"></script>
+  </body>
+
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
+  <script src="bower_components/react/react.js"></script>
+  <script src="bower_components/react/JSXTransformer.js"></script>
+  <script src="bower_components/moment/min/moment.min.js"></script>
+</html>
