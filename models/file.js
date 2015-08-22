@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema
+var Schema = mongoose.Schema;
 
 var File = new Schema({
   actualName: String,
@@ -13,7 +13,11 @@ var File = new Schema({
     default: 0
   },
   lastDownload: Date,
-  size: Number
+  size: Number,
+  folder: {
+    type: String,
+    default: "public"
+  }
 });
 
 

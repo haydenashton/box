@@ -1,13 +1,58 @@
 $(document).ready(function(){
 
+  var FileSelectComponent = React.createClass({
+    fileSelected: function(){
+      var filePath = $("#fileElement").val().split("\\");
+      this.props.onFileSelected(filePath[filePath.length-1]);
+    },
+
+    selectFile: function(e){
+      $("#fileElement").trigger("click");
+    },
+
+    render: function(){
+      return (
+        <div>
+          <input onChange={this.fileSelected} type="file" id="fileElement" name="file" ref="fileUpload" style={{display:"none"}}/>
+          <button type="button" className="btn btn-default btn-small" onClick={this.selectFile}>
+            <i className="glyphicon glyphicon-folder-open"></i> Select File
+          </button><br/><br/>
+          <span ref="selectedFile">{this.props.currentFile}</span>
+        </div>
+      );
+    }
+  });
+
   var FileUploadComponent = React.createClass({
+    getInitialState: function(){
+      return {
+        "currentFile": ""
+      };
+    },
+
+    fileSelected: function(fileName){
+      this.setState({currentFile: fileName});
+    },
+
+    onSubmit: function(e){
+        e.preventDefault();
+        var formData = new FormData($("#uploadForm")[0]);
+        this.props.formSubmitted(formData);
+    },
+
     render: function(){
       return (
         <div id="fileUploadComponent">
           <h3>Upload a File:</h3>
-          <form action="/files" method="POST" encType="multipart/form-data">
-            <input type="file" id="fileElement" name="file"/><br/>
-            <input type="submit" className="btn btn-primary" value="Upload"/>
+          <form id="uploadForm" onSubmit={this.onSubmit} encType="multipart/form-data">
+            <div className="row">
+              <div className="col-sm-5">
+                <FileSelectComponent currentFile={this.state.currentFile} onFileSelected={this.fileSelected}/>
+              </div>
+              <div className="col-sm-7">
+                <button type="submit" className="btn btn-primary"><i className="glyphicon glyphicon-cloud-upload"></i> Upload</button>
+              </div>
+            </div>
           </form>
         </div>
       );
@@ -94,6 +139,22 @@ $(document).ready(function(){
       this.setState({files: currentFiles});
     },
 
+    formSubmitted: function(data){
+      $.ajax({
+        url: '/files',
+        data: data,
+        type: 'POST',
+        processData: false,
+        contentType: false
+      }).done(function(result){
+        if(result && result.nameOnDisk){
+          var currentFiles = this.state.files;
+          currentFiles.push(result);
+          this.setState({files: currentFiles});
+        }
+      }.bind(this));
+    },
+
     loadFilesFromServer: function(){
       $.ajax({
         url: this.props.url,
@@ -114,10 +175,10 @@ $(document).ready(function(){
     render: function(){
       return (
         <div className="row">
-          <div className="col-sm-2">
-            <FileUploadComponent />
+          <div className="col-sm-3">
+            <FileUploadComponent formSubmitted={this.formSubmitted} />
           </div>
-          <div className="col-sm-10">
+          <div className="col-sm-9">
             <FileListComponent fileDownloaded={this.fileDownloaded} files={this.state.files}/>
           </div>
         </div>
@@ -130,9 +191,4 @@ $(document).ready(function(){
     <FileManagerComponent pollInterval="30000" url="/files?json"/>,
     document.getElementById("app")
   );
-  $("#fileListComponent").dataTable({
-    "columnDefs": [
-      { "orderable": false, "targets": 5 }
-    ]
-  });
 });

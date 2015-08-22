@@ -12,16 +12,15 @@
     <h1>Files</h1>
     <div id="app"></div>
 
-    <script type="text/jsx">
+    <script type="text/javascript">
       var files = <%- JSON.stringify(files) %>;
     </script>
-
-    <script type="text/jsx" src="javascripts/app.js"></script>
   </body>
 
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
   <script src="bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
   <script src="bower_components/react/react.js"></script>
-  <script src="bower_components/react/JSXTransformer.js"></script>
   <script src="bower_components/moment/min/moment.min.js"></script>
+
+  <script type="text/javascript" src="build/app.js"></script>
 </html>

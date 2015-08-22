@@ -1,11 +1,14 @@
+'use_strict';
+
 var FileModel = require('mongoose').model("File");
 var fs = require('fs');
 var path = require('path');
 
-module.exports.index = function(req, res, next) {
-  FileModel.find(function(err, files){
-    if(err) return next(err);
-    if('json' in req.query){
+module.exports.index = function (req, res, next) {
+  FileModel.find(function (err, files) {
+    if (err) { return next(err); }
+
+    if ('json' in req.query) {
       res.json(files);
     }
     else {
@@ -69,7 +72,7 @@ module.exports.upload = function(req, res, next){
         fileDoc.size = stats.size;
         fileDoc.nameOnDisk = actualFileName;
         fileDoc.save(function(err){
-          res.redirect('/files');
+          res.json(fileDoc);
         });
       });
     });
