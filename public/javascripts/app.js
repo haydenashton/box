@@ -31,16 +31,23 @@ $(document).ready(function(){
     },
 
     fileSelected: function(fileName){
-      this.setState({currentFile: fileName});
+      this.setState({ currentFile: fileName });
     },
 
     onSubmit: function(e){
         e.preventDefault();
-        var formData = new FormData($("#uploadForm")[0]);
-        this.props.formSubmitted(formData);
+        var formElement = $("#uploadForm");
+        if(formElement && formElement.length) {
+          var formData = new FormData(formElement[0]);
+          this.props.formSubmitted(formData);
+        }
     },
 
-    render: function(){
+    hasFileSelected: function() {
+      return this.state.currentFile !== "";
+    },
+
+    render: function() {
       return (
         <div id="fileUploadComponent">
           <h3>Upload a File:</h3>
@@ -50,7 +57,7 @@ $(document).ready(function(){
                 <FileSelectComponent currentFile={this.state.currentFile} onFileSelected={this.fileSelected}/>
               </div>
               <div className="col-sm-7">
-                <button type="submit" className="btn btn-primary"><i className="glyphicon glyphicon-cloud-upload"></i> Upload</button>
+                <button disabled={!this.hasFileSelected()} type="submit" className="btn btn-primary"><i className="glyphicon glyphicon-cloud-upload"></i> Upload</button>
               </div>
             </div>
           </form>
@@ -248,6 +255,7 @@ $(document).ready(function(){
     render: function(){
       return (
         <div className="folder" onClick={this.selected}>
+          <span className="glyphicon glyphicon-folder-open"> </span>&nbsp;&nbsp;
           {this.props.folder.name}
         </div>
       );

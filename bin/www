@@ -35,7 +35,6 @@ var server = http.createServer(app);
  */
 
  db.once('open', function(){
-   console.log("Connected to Mongo");
    server.listen(port);
  });
 
