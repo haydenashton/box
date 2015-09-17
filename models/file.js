@@ -15,9 +15,18 @@ var File = new Schema({
   lastDownload: Date,
   size: Number,
   folder: {
-    type: String,
-    default: "public"
+    type: Schema.ObjectId,
+    ref: "Folder"
   }
+});
+
+
+File.static('getFolders', function(callback){
+  this.distinct("folder", function(err, folders){
+    if (err){ return callback(err); }
+
+    return callback(null, folders);
+  });
 });
 
 

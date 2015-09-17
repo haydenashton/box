@@ -124,7 +124,8 @@ $(document).ready(function(){
   var FileManagerComponent = React.createClass({
     getInitialState: function(){
       return {
-        "files": files
+        "files": [],
+        "intervalId": ""
       };
     },
 
@@ -141,7 +142,7 @@ $(document).ready(function(){
 
     formSubmitted: function(data){
       $.ajax({
-        url: '/files',
+        url: '/files?folder=' + this.props.folder._id,
         data: data,
         type: 'POST',
         processData: false,
@@ -157,10 +158,10 @@ $(document).ready(function(){
 
     loadFilesFromServer: function(){
       $.ajax({
-        url: this.props.url,
+        url: "/files?folder=" + this.props.folder._id,
         dataType: "json",
         success: function(data){
-          this.setState({files: data});
+          this.setState({files: data.files});
         }.bind(this),
         error: function(xhr, status, err){
           console.error(this.props.url, status, err.toString());
@@ -169,17 +170,28 @@ $(document).ready(function(){
     },
 
     componentDidMount: function() {
-      setInterval(this.loadFilesFromServer, this.props.pollInterval);
+      this.loadFilesFromServer();
+      var intervalId = setInterval(this.loadFilesFromServer, this.props.pollInterval);
+      this.setState({"intervalId": intervalId});
+    },
+
+    componentWillUnmount: function(){
+      clearInterval(this.state.intervalId);
     },
 
     render: function(){
       return (
-        <div className="row">
-          <div className="col-sm-3">
-            <FileUploadComponent formSubmitted={this.formSubmitted} />
+        <div>
+          <div className="row">
+            <h2>Folder: {this.props.folderName}</h2>
           </div>
-          <div className="col-sm-9">
-            <FileListComponent fileDownloaded={this.fileDownloaded} files={this.state.files}/>
+          <div className="row">
+            <div className="col-sm-3">
+              <FileUploadComponent formSubmitted={this.formSubmitted} />
+            </div>
+            <div className="col-sm-9">
+              <FileListComponent fileDownloaded={this.fileDownloaded} files={this.state.files}/>
+            </div>
           </div>
         </div>
       );
@@ -187,8 +199,163 @@ $(document).ready(function(){
   });
 
 
+  var FolderCreator = React.createClass({
+    createFolder: function(){
+      var folderName = React.findDOMNode(this.refs.newFolderName).value;
+
+      if(folderName.trim()){
+        this.props.createFolder(folderName);
+        React.findDOMNode(this.refs.newFolderName).value = '';
+      }
+    },
+
+    componentDidMount: function(){
+        $(".newFolderModal").modal();
+    },
+
+    render: function(){
+      return (
+        <div className="modal fade newFolderModal">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 className="modal-title">Create New Folder</h4>
+              </div>
+              <div className="modal-body">
+                <label>Folder Name:</label>
+                <input type="text" className="form-control" ref="newFolderName"/>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.createFolder}>Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
+
+
+  var FolderComponent = React.createClass({
+    selected: function(){
+      this.props.folderSelected(this.props.folder);
+    },
+
+    render: function(){
+      return (
+        <div className="folder" onClick={this.selected}>
+          {this.props.folder.name}
+        </div>
+      );
+    }
+  });
+
+  var FolderManagerComponent = React.createClass({
+    getInitialState: function(){
+      return {
+        folders: folders,
+        creatingFolder: false
+      };
+    },
+
+    folderSelected: function(folder){
+      this.props.folderRequested(folder);
+    },
+
+    promptCreateFolder: function(){
+      this.setState({"creatingFolder": true});
+    },
+
+    createFolder: function(folderName){
+      var data = {
+        "name": folderName,
+        "parent": null
+      };
+
+      $.ajax({
+        url: '/folders',
+        data: data,
+        type: 'POST'
+      }).done(function(result){
+        var currentFolders = this.state.folders;
+        currentFolders.push(result);
+        this.setState({folders: currentFolders, creatingFolder: false});
+      }.bind(this));
+    },
+
+    render: function(){
+      var self = this;
+      var folderComponents = this.state.folders.map(function(folder){
+        return (
+          <FolderComponent folderSelected={self.folderSelected} folder={folder} key={folder._id}/>
+        );
+      });
+
+      var folderModal = (this.state.creatingFolder) ? <FolderCreator createFolder={this.createFolder} /> : '';
+
+      return (
+        <div className="folders">
+          <h2>Folders</h2>
+          <button type="button" className="btn btn-primary" id="newFolder" onClick={this.promptCreateFolder}>
+            <i className="glyphicon glyphicon-folder-close"></i> Create Folder
+          </button>
+          <div className="clear"></div>
+          {folderComponents}
+          {folderModal}
+        </div>
+      );
+    }
+  });
+
+
+  var Nav = React.createClass({
+    render: function(){
+      return (
+        <div>
+          <button type="button" className="pull-right btn btn-default" onClick={this.props.goHome}>
+            <i className="glyphicon glyphicon-home"></i> Home
+          </button>
+        </div>
+      );
+    }
+  });
+
+
+  var App = React.createClass({
+    getInitialState: function(){
+      return {
+        requestedFolder: null
+      };
+    },
+
+    folderRequested: function(folder){
+      this.setState({requestedFolder: folder});
+    },
+
+    clearFolder: function(){
+      this.folderRequested(null);
+    },
+
+    render: function(){
+      var component = (this.state.requestedFolder) ?
+        <FileManagerComponent pollInterval="30000" folder={this.state.requestedFolder}/> :
+        <FolderManagerComponent folderRequested={this.folderRequested} />;
+      return (
+        <div>
+          <h1>File Browser</h1>
+          <Nav goHome={this.clearFolder}/>
+          {component}
+        </div>
+      );
+    }
+  });
+
   React.render(
-    <FileManagerComponent pollInterval="30000" url="/files?json"/>,
+    <App />,
     document.getElementById("app")
   );
 });

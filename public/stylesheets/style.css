@@ -7,6 +7,22 @@ a {
   color: #00B7FF;
 }
 
+.folder {
+  border: thin solid lightgrey;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+  width: 40%;
+  cursor: pointer;
+  display:inline-block;
+}
+
+#newFolder {
+  margin-right: 5px;
+}
+
+div.clear { clear:both; }
+
 /*.fileItemComponent {
   border: thin solid lightgrey;
   border-radius: 10px;

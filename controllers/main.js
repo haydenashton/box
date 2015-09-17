@@ -1,20 +1,52 @@
 'use_strict';
 
-var FileModel = require('mongoose').model("File");
+var mongoose = require('mongoose');
+var FileModel = mongoose.model("File");
+var FolderModel = mongoose.model("Folder");
 var fs = require('fs');
 var path = require('path');
 
 module.exports.index = function (req, res, next) {
-  FileModel.find(function (err, files) {
+  FolderModel.find({}, function(err, folders){
+    if(err) { return next(err); }
+
+    res.render('index', {folders: folders});
+  });
+};
+
+module.exports.listFolders = function(req, res, next){
+  FolderModel.find({}, function(err, folders){
+    if(err) { return next(err); }
+
+    res.json({"folders": folders});
+  });
+};
+
+module.exports.createFolder = function(req, res, next){
+  var newFolder = new FolderModel(req.body);
+  newFolder.parent = null;
+  newFolder.save(function(err){
     if (err) { return next(err); }
 
-    if ('json' in req.query) {
-      res.json(files);
-    }
-    else {
-      res.render('index', {files: files});
-    }
+    res.json(newFolder);
   });
+};
+
+
+module.exports.listFiles = function(req, res, next){
+  var folder  = req.query.folder ? req.query.folder : null;
+
+  if(folder){
+    console.log(folder);
+    FileModel.find({"folder": folder}, function (err, filesInFolder) {
+      if (err) { return next(err); }
+
+      res.json({"files": filesInFolder});
+    });
+  }
+  else {
+    res.json({"files": []});
+  }
 };
 
 
@@ -54,6 +86,7 @@ module.exports.getFile = function(req, res, next){
 module.exports.upload = function(req, res, next){
   fileDoc = new FileModel();
   fileDoc.actualName = req.filename;
+  fileDoc.folder = req.query.folder;
 
   fileDoc.save(function(err){
     if(err) return next(err);
@@ -65,7 +98,6 @@ module.exports.upload = function(req, res, next){
     req.file.pipe(fsStream);
 
     fsStream.on('finish', function(){
-      console.log("Stream finish");
       fs.stat(saveTo, function(err, stats){
         if(err) return next(err);
 
@@ -84,7 +116,6 @@ module.exports.parseFiles = function(req, res, next){
   req.busboy.on('file', function(fieldName, file, filename, encoding, mimetype){
     req.file = file;
     req.filename = filename;
-    console.log(file);
     next();
   });
   return req.pipe(req.busboy);
