@@ -6,46 +6,18 @@ var FolderModel = mongoose.model("Folder");
 var fs = require('fs');
 var path = require('path');
 
-// module.exports.index = function (req, res, next) {
-//   FolderModel.find({}, function(err, folders){
-//     if(err) { return next(err); }
-//
-//     res.render('index', {folders: folders});
-//   });
-// };
-//
-// module.exports.listFolders = function(req, res, next){
-//   FolderModel.find({}, function(err, folders){
-//     if(err) { return next(err); }
-//
-//     res.json({"folders": folders});
-//   });
-// };
-//
-// module.exports.createFolder = function(req, res, next){
-//   var newFolder = new FolderModel(req.body);
-//   newFolder.parent = null;
-//   newFolder.save(function(err){
-//     if (err) { return next(err); }
-//
-//     res.json(newFolder);
-//   });
-// };
-
 
 module.exports.listFiles = function(req, res, next){
-  var folder  = req.query.folder ? req.query.folder : null;
-
-  if(folder){
-    console.log(folder);
-    FileModel.find({"folder": folder}, function (err, filesInFolder) {
+  if(req.folder){
+    console.log(req.folder);
+    FileModel.find({"folder": req.folder._id}, function (err, filesInFolder) {
       if (err) { return next(err); }
 
-      res.json({"files": filesInFolder});
+      res.json({"files": filesInFolder, "folder": req.folder});
     });
   }
   else {
-    res.json({"files": []});
+    res.json({"files": [], "folder": {}});
   }
 };
 

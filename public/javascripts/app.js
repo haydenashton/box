@@ -1,4 +1,11 @@
+var React = require('react');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+var Link = ReactRouter.Link;
+
 $(document).ready(function(){
+
 
   var FileSelectComponent = React.createClass({
     fileSelected: function(){
@@ -53,10 +60,10 @@ $(document).ready(function(){
           <h3>Upload a File:</h3>
           <form id="uploadForm" onSubmit={this.onSubmit} encType="multipart/form-data">
             <div className="row">
-              <div className="col-sm-5">
+              <div className="col-sm-3">
                 <FileSelectComponent currentFile={this.state.currentFile} onFileSelected={this.fileSelected}/>
               </div>
-              <div className="col-sm-7">
+              <div className="col-sm-9">
                 <button disabled={!this.hasFileSelected()} type="submit" className="btn btn-primary"><i className="glyphicon glyphicon-cloud-upload"></i> Upload</button>
               </div>
             </div>
@@ -132,7 +139,8 @@ $(document).ready(function(){
     getInitialState: function(){
       return {
         "files": [],
-        "intervalId": ""
+        "intervalId": "",
+        "folderName": ""
       };
     },
 
@@ -149,7 +157,7 @@ $(document).ready(function(){
 
     formSubmitted: function(data){
       $.ajax({
-        url: '/files?folder=' + this.props.folder._id,
+        url: '/files?folder=' + this.props.params.folderId,
         data: data,
         type: 'POST',
         processData: false,
@@ -163,23 +171,27 @@ $(document).ready(function(){
       }.bind(this));
     },
 
-    loadFilesFromServer: function(){
+    loadFilesFromServer: function(folderId, url){
       $.ajax({
-        url: "/files?folder=" + this.props.folder._id,
+        url: "/files?folder=" + (folderId || this.props.params.folderId),
         dataType: "json",
         success: function(data){
-          this.setState({files: data.files});
+          this.setState({files: data.files, folderName: data.folder.name});
         }.bind(this),
         error: function(xhr, status, err){
-          console.error(this.props.url, status, err.toString());
+          console.error(url || this.props.url, status, err.toString());
         }.bind(this)
       });
     },
 
     componentDidMount: function() {
       this.loadFilesFromServer();
-      var intervalId = setInterval(this.loadFilesFromServer, this.props.pollInterval);
+      var intervalId = setInterval(this.loadFilesFromServer, 30000);
       this.setState({"intervalId": intervalId});
+    },
+
+    componentWillReceiveProps: function(newProps) {
+      this.loadFilesFromServer(newProps.params.folderId, newProps.url);
     },
 
     componentWillUnmount: function(){
@@ -190,15 +202,13 @@ $(document).ready(function(){
       return (
         <div>
           <div className="row">
-            <h2>Folder: {this.props.folderName}</h2>
+            <h2>Folder: {this.state.folderName}</h2>
           </div>
           <div className="row">
-            <div className="col-sm-3">
-              <FileUploadComponent formSubmitted={this.formSubmitted} />
-            </div>
-            <div className="col-sm-9">
-              <FileListComponent fileDownloaded={this.fileDownloaded} files={this.state.files}/>
-            </div>
+            <FileUploadComponent formSubmitted={this.formSubmitted} />
+          </div>
+          <div className="row">
+            <FileListComponent fileDownloaded={this.fileDownloaded} files={this.state.files}/>
           </div>
         </div>
       );
@@ -248,15 +258,12 @@ $(document).ready(function(){
 
 
   var FolderComponent = React.createClass({
-    selected: function(){
-      this.props.folderSelected(this.props.folder);
-    },
 
     render: function(){
       return (
         <div className="folder" onClick={this.selected}>
           <span className="glyphicon glyphicon-folder-open"> </span>&nbsp;&nbsp;
-          {this.props.folder.name}
+          <Link to={`/folders/${this.props.folder._id}`}>{this.props.folder.name}</Link>
         </div>
       );
     }
@@ -268,10 +275,6 @@ $(document).ready(function(){
         folders: folders,
         creatingFolder: false
       };
-    },
-
-    folderSelected: function(folder){
-      this.props.folderRequested(folder);
     },
 
     promptCreateFolder: function(){
@@ -299,21 +302,30 @@ $(document).ready(function(){
       var self = this;
       var folderComponents = this.state.folders.map(function(folder){
         return (
-          <FolderComponent folderSelected={self.folderSelected} folder={folder} key={folder._id}/>
+          <FolderComponent folder={folder} key={folder._id}/>
         );
       });
 
       var folderModal = (this.state.creatingFolder) ? <FolderCreator createFolder={this.createFolder} /> : '';
 
       return (
-        <div className="folders">
-          <h2>Folders</h2>
-          <button type="button" className="btn btn-primary" id="newFolder" onClick={this.promptCreateFolder}>
-            <i className="glyphicon glyphicon-folder-close"></i> Create Folder
-          </button>
+        <div className="folders container">
           <div className="clear"></div>
-          {folderComponents}
-          {folderModal}
+          <div className="row">
+            <div className="col-sm-4">
+
+              <h2>Folders</h2>
+              <button type="button" className="btn btn-primary" id="newFolder" onClick={this.promptCreateFolder}>
+                <i className="glyphicon glyphicon-folder-close"></i> Create Folder
+              </button>
+
+              {folderComponents}
+              {folderModal}
+            </div>
+            <div className="col-sm-8">
+              {this.props.children}
+            </div>
+          </div>
         </div>
       );
     }
@@ -324,9 +336,9 @@ $(document).ready(function(){
     render: function(){
       return (
         <div>
-          <button type="button" className="pull-right btn btn-default" onClick={this.props.goHome}>
+          <Link to={`/folders`} className="pull-right btn btn-default">
             <i className="glyphicon glyphicon-home"></i> Home
-          </button>
+          </Link>
         </div>
       );
     }
@@ -349,21 +361,22 @@ $(document).ready(function(){
     },
 
     render: function(){
-      var component = (this.state.requestedFolder) ?
-        <FileManagerComponent pollInterval="30000" folder={this.state.requestedFolder}/> :
-        <FolderManagerComponent folderRequested={this.folderRequested} />;
       return (
         <div>
-          <h1>File Browser</h1>
-          <Nav goHome={this.clearFolder}/>
-          {component}
+          <h1>File Browser <Nav/></h1>
+          {this.props.children}
         </div>
       );
     }
   });
 
-  React.render(
-    <App />,
-    document.getElementById("app")
-  );
+  React.render((
+    <Router>
+      <Route path="/" component={App}>
+        <Route path="folders" component={FolderManagerComponent}>
+          <Route path="/folders/:folderId" component={FileManagerComponent}/>
+        </Route>
+      </Route>
+    </Router>
+  ), document.getElementById("app"));
 });

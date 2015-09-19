@@ -1,9 +1,15 @@
-"use strict";
+'use strict';
+
+var React = require('react');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+var Link = ReactRouter.Link;
 
 $(document).ready(function () {
 
   var FileSelectComponent = React.createClass({
-    displayName: "FileSelectComponent",
+    displayName: 'FileSelectComponent',
 
     fileSelected: function fileSelected() {
       var filePath = $("#fileElement").val().split("\\");
@@ -16,20 +22,20 @@ $(document).ready(function () {
 
     render: function render() {
       return React.createElement(
-        "div",
+        'div',
         null,
-        React.createElement("input", { onChange: this.fileSelected, type: "file", id: "fileElement", name: "file", ref: "fileUpload", style: { display: "none" } }),
+        React.createElement('input', { onChange: this.fileSelected, type: 'file', id: 'fileElement', name: 'file', ref: 'fileUpload', style: { display: "none" } }),
         React.createElement(
-          "button",
-          { type: "button", className: "btn btn-default btn-small", onClick: this.selectFile },
-          React.createElement("i", { className: "glyphicon glyphicon-folder-open" }),
-          " Select File"
+          'button',
+          { type: 'button', className: 'btn btn-default btn-small', onClick: this.selectFile },
+          React.createElement('i', { className: 'glyphicon glyphicon-folder-open' }),
+          ' Select File'
         ),
-        React.createElement("br", null),
-        React.createElement("br", null),
+        React.createElement('br', null),
+        React.createElement('br', null),
         React.createElement(
-          "span",
-          { ref: "selectedFile" },
+          'span',
+          { ref: 'selectedFile' },
           this.props.currentFile
         )
       );
@@ -37,7 +43,7 @@ $(document).ready(function () {
   });
 
   var FileUploadComponent = React.createClass({
-    displayName: "FileUploadComponent",
+    displayName: 'FileUploadComponent',
 
     getInitialState: function getInitialState() {
       return {
@@ -64,32 +70,32 @@ $(document).ready(function () {
 
     render: function render() {
       return React.createElement(
-        "div",
-        { id: "fileUploadComponent" },
+        'div',
+        { id: 'fileUploadComponent' },
         React.createElement(
-          "h3",
+          'h3',
           null,
-          "Upload a File:"
+          'Upload a File:'
         ),
         React.createElement(
-          "form",
-          { id: "uploadForm", onSubmit: this.onSubmit, encType: "multipart/form-data" },
+          'form',
+          { id: 'uploadForm', onSubmit: this.onSubmit, encType: 'multipart/form-data' },
           React.createElement(
-            "div",
-            { className: "row" },
+            'div',
+            { className: 'row' },
             React.createElement(
-              "div",
-              { className: "col-sm-5" },
+              'div',
+              { className: 'col-sm-3' },
               React.createElement(FileSelectComponent, { currentFile: this.state.currentFile, onFileSelected: this.fileSelected })
             ),
             React.createElement(
-              "div",
-              { className: "col-sm-7" },
+              'div',
+              { className: 'col-sm-9' },
               React.createElement(
-                "button",
-                { disabled: !this.hasFileSelected(), type: "submit", className: "btn btn-primary" },
-                React.createElement("i", { className: "glyphicon glyphicon-cloud-upload" }),
-                " Upload"
+                'button',
+                { disabled: !this.hasFileSelected(), type: 'submit', className: 'btn btn-primary' },
+                React.createElement('i', { className: 'glyphicon glyphicon-cloud-upload' }),
+                ' Upload'
               )
             )
           )
@@ -99,44 +105,44 @@ $(document).ready(function () {
   });
 
   var FileItemComponent = React.createClass({
-    displayName: "FileItemComponent",
+    displayName: 'FileItemComponent',
 
     render: function render() {
       return React.createElement(
-        "tr",
-        { className: "fileItemComponent" },
+        'tr',
+        { className: 'fileItemComponent' },
         React.createElement(
-          "td",
+          'td',
           null,
           this.props.data.actualName
         ),
         React.createElement(
-          "td",
+          'td',
           null,
           this.formatDate(this.props.data.uploaded)
         ),
         React.createElement(
-          "td",
+          'td',
           null,
           this.props.data.numberOfDownloads
         ),
         React.createElement(
-          "td",
+          'td',
           null,
           this.props.data.lastDownload ? this.formatDate(this.props.data.lastDownload) : "Never"
         ),
         React.createElement(
-          "td",
+          'td',
           null,
           this.formatFileSize()
         ),
         React.createElement(
-          "td",
+          'td',
           null,
           React.createElement(
-            "button",
-            { type: "button", className: "btn btn-default", onClick: this.downloadFile },
-            React.createElement("i", { className: "glyphicon glyphicon-download-alt" })
+            'button',
+            { type: 'button', className: 'btn btn-default', onClick: this.downloadFile },
+            React.createElement('i', { className: 'glyphicon glyphicon-download-alt' })
           )
         )
       );
@@ -160,49 +166,49 @@ $(document).ready(function () {
   });
 
   var FileListComponent = React.createClass({
-    displayName: "FileListComponent",
+    displayName: 'FileListComponent',
 
     render: function render() {
       var self = this;
       return React.createElement(
-        "table",
-        { className: "table", id: "fileListComponent" },
+        'table',
+        { className: 'table', id: 'fileListComponent' },
         React.createElement(
-          "thead",
+          'thead',
           null,
           React.createElement(
-            "tr",
+            'tr',
             null,
             React.createElement(
-              "th",
+              'th',
               null,
-              "Name"
+              'Name'
             ),
             React.createElement(
-              "th",
+              'th',
               null,
-              "Uploaded"
+              'Uploaded'
             ),
             React.createElement(
-              "th",
+              'th',
               null,
-              "Number of Downloads"
+              'Number of Downloads'
             ),
             React.createElement(
-              "th",
+              'th',
               null,
-              "Last Download"
+              'Last Download'
             ),
             React.createElement(
-              "th",
+              'th',
               null,
-              "Size"
+              'Size'
             ),
-            React.createElement("th", null)
+            React.createElement('th', null)
           )
         ),
         React.createElement(
-          "tbody",
+          'tbody',
           null,
           this.props.files.map(function (file) {
             return React.createElement(FileItemComponent, { fileId: file._id, fileDownloaded: self.props.fileDownloaded, key: file._id, data: file });
@@ -213,12 +219,13 @@ $(document).ready(function () {
   });
 
   var FileManagerComponent = React.createClass({
-    displayName: "FileManagerComponent",
+    displayName: 'FileManagerComponent',
 
     getInitialState: function getInitialState() {
       return {
         "files": [],
-        "intervalId": ""
+        "intervalId": "",
+        "folderName": ""
       };
     },
 
@@ -235,7 +242,7 @@ $(document).ready(function () {
 
     formSubmitted: function formSubmitted(data) {
       $.ajax({
-        url: '/files?folder=' + this.props.folder._id,
+        url: '/files?folder=' + this.props.params.folderId,
         data: data,
         type: 'POST',
         processData: false,
@@ -249,23 +256,27 @@ $(document).ready(function () {
       }).bind(this));
     },
 
-    loadFilesFromServer: function loadFilesFromServer() {
+    loadFilesFromServer: function loadFilesFromServer(folderId, url) {
       $.ajax({
-        url: "/files?folder=" + this.props.folder._id,
+        url: "/files?folder=" + (folderId || this.props.params.folderId),
         dataType: "json",
         success: (function (data) {
-          this.setState({ files: data.files });
+          this.setState({ files: data.files, folderName: data.folder.name });
         }).bind(this),
         error: (function (xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
+          console.error(url || this.props.url, status, err.toString());
         }).bind(this)
       });
     },
 
     componentDidMount: function componentDidMount() {
       this.loadFilesFromServer();
-      var intervalId = setInterval(this.loadFilesFromServer, this.props.pollInterval);
+      var intervalId = setInterval(this.loadFilesFromServer, 30000);
       this.setState({ "intervalId": intervalId });
+    },
+
+    componentWillReceiveProps: function componentWillReceiveProps(newProps) {
+      this.loadFilesFromServer(newProps.params.folderId, newProps.url);
     },
 
     componentWillUnmount: function componentWillUnmount() {
@@ -274,38 +285,34 @@ $(document).ready(function () {
 
     render: function render() {
       return React.createElement(
-        "div",
+        'div',
         null,
         React.createElement(
-          "div",
-          { className: "row" },
+          'div',
+          { className: 'row' },
           React.createElement(
-            "h2",
+            'h2',
             null,
-            "Folder: ",
-            this.props.folderName
+            'Folder: ',
+            this.state.folderName
           )
         ),
         React.createElement(
-          "div",
-          { className: "row" },
-          React.createElement(
-            "div",
-            { className: "col-sm-3" },
-            React.createElement(FileUploadComponent, { formSubmitted: this.formSubmitted })
-          ),
-          React.createElement(
-            "div",
-            { className: "col-sm-9" },
-            React.createElement(FileListComponent, { fileDownloaded: this.fileDownloaded, files: this.state.files })
-          )
+          'div',
+          { className: 'row' },
+          React.createElement(FileUploadComponent, { formSubmitted: this.formSubmitted })
+        ),
+        React.createElement(
+          'div',
+          { className: 'row' },
+          React.createElement(FileListComponent, { fileDownloaded: this.fileDownloaded, files: this.state.files })
         )
       );
     }
   });
 
   var FolderCreator = React.createClass({
-    displayName: "FolderCreator",
+    displayName: 'FolderCreator',
 
     createFolder: function createFolder() {
       var folderName = React.findDOMNode(this.refs.newFolderName).value;
@@ -322,54 +329,54 @@ $(document).ready(function () {
 
     render: function render() {
       return React.createElement(
-        "div",
-        { className: "modal fade newFolderModal" },
+        'div',
+        { className: 'modal fade newFolderModal' },
         React.createElement(
-          "div",
-          { className: "modal-dialog" },
+          'div',
+          { className: 'modal-dialog' },
           React.createElement(
-            "div",
-            { className: "modal-content" },
+            'div',
+            { className: 'modal-content' },
             React.createElement(
-              "div",
-              { className: "modal-header" },
+              'div',
+              { className: 'modal-header' },
               React.createElement(
-                "button",
-                { type: "button", className: "close", "data-dismiss": "modal", "aria-label": "Close" },
+                'button',
+                { type: 'button', className: 'close', 'data-dismiss': 'modal', 'aria-label': 'Close' },
                 React.createElement(
-                  "span",
-                  { "aria-hidden": "true" },
-                  "×"
+                  'span',
+                  { 'aria-hidden': 'true' },
+                  '×'
                 )
               ),
               React.createElement(
-                "h4",
-                { className: "modal-title" },
-                "Create New Folder"
+                'h4',
+                { className: 'modal-title' },
+                'Create New Folder'
               )
             ),
             React.createElement(
-              "div",
-              { className: "modal-body" },
+              'div',
+              { className: 'modal-body' },
               React.createElement(
-                "label",
+                'label',
                 null,
-                "Folder Name:"
+                'Folder Name:'
               ),
-              React.createElement("input", { type: "text", className: "form-control", ref: "newFolderName" })
+              React.createElement('input', { type: 'text', className: 'form-control', ref: 'newFolderName' })
             ),
             React.createElement(
-              "div",
-              { className: "modal-footer" },
+              'div',
+              { className: 'modal-footer' },
               React.createElement(
-                "button",
-                { type: "button", className: "btn btn-default", "data-dismiss": "modal" },
-                "Close"
+                'button',
+                { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
+                'Close'
               ),
               React.createElement(
-                "button",
-                { type: "button", className: "btn btn-primary", "data-dismiss": "modal", onClick: this.createFolder },
-                "Save changes"
+                'button',
+                { type: 'button', className: 'btn btn-primary', 'data-dismiss': 'modal', onClick: this.createFolder },
+                'Save changes'
               )
             )
           )
@@ -379,39 +386,35 @@ $(document).ready(function () {
   });
 
   var FolderComponent = React.createClass({
-    displayName: "FolderComponent",
-
-    selected: function selected() {
-      this.props.folderSelected(this.props.folder);
-    },
+    displayName: 'FolderComponent',
 
     render: function render() {
       return React.createElement(
-        "div",
-        { className: "folder", onClick: this.selected },
+        'div',
+        { className: 'folder', onClick: this.selected },
         React.createElement(
-          "span",
-          { className: "glyphicon glyphicon-folder-open" },
-          " "
+          'span',
+          { className: 'glyphicon glyphicon-folder-open' },
+          ' '
         ),
-        "  ",
-        this.props.folder.name
+        '  ',
+        React.createElement(
+          Link,
+          { to: '/folders/' + this.props.folder._id },
+          this.props.folder.name
+        )
       );
     }
   });
 
   var FolderManagerComponent = React.createClass({
-    displayName: "FolderManagerComponent",
+    displayName: 'FolderManagerComponent',
 
     getInitialState: function getInitialState() {
       return {
         folders: folders,
         creatingFolder: false
       };
-    },
-
-    folderSelected: function folderSelected(folder) {
-      this.props.folderRequested(folder);
     },
 
     promptCreateFolder: function promptCreateFolder() {
@@ -438,51 +441,64 @@ $(document).ready(function () {
     render: function render() {
       var self = this;
       var folderComponents = this.state.folders.map(function (folder) {
-        return React.createElement(FolderComponent, { folderSelected: self.folderSelected, folder: folder, key: folder._id });
+        return React.createElement(FolderComponent, { folder: folder, key: folder._id });
       });
 
       var folderModal = this.state.creatingFolder ? React.createElement(FolderCreator, { createFolder: this.createFolder }) : '';
 
       return React.createElement(
-        "div",
-        { className: "folders" },
+        'div',
+        { className: 'folders container' },
+        React.createElement('div', { className: 'clear' }),
         React.createElement(
-          "h2",
-          null,
-          "Folders"
-        ),
-        React.createElement(
-          "button",
-          { type: "button", className: "btn btn-primary", id: "newFolder", onClick: this.promptCreateFolder },
-          React.createElement("i", { className: "glyphicon glyphicon-folder-close" }),
-          " Create Folder"
-        ),
-        React.createElement("div", { className: "clear" }),
-        folderComponents,
-        folderModal
+          'div',
+          { className: 'row' },
+          React.createElement(
+            'div',
+            { className: 'col-sm-4' },
+            React.createElement(
+              'h2',
+              null,
+              'Folders'
+            ),
+            React.createElement(
+              'button',
+              { type: 'button', className: 'btn btn-primary', id: 'newFolder', onClick: this.promptCreateFolder },
+              React.createElement('i', { className: 'glyphicon glyphicon-folder-close' }),
+              ' Create Folder'
+            ),
+            folderComponents,
+            folderModal
+          ),
+          React.createElement(
+            'div',
+            { className: 'col-sm-8' },
+            this.props.children
+          )
+        )
       );
     }
   });
 
   var Nav = React.createClass({
-    displayName: "Nav",
+    displayName: 'Nav',
 
     render: function render() {
       return React.createElement(
-        "div",
+        'div',
         null,
         React.createElement(
-          "button",
-          { type: "button", className: "pull-right btn btn-default", onClick: this.props.goHome },
-          React.createElement("i", { className: "glyphicon glyphicon-home" }),
-          " Home"
+          Link,
+          { to: '/folders', className: 'pull-right btn btn-default' },
+          React.createElement('i', { className: 'glyphicon glyphicon-home' }),
+          ' Home'
         )
       );
     }
   });
 
   var App = React.createClass({
-    displayName: "App",
+    displayName: 'App',
 
     getInitialState: function getInitialState() {
       return {
@@ -499,20 +515,31 @@ $(document).ready(function () {
     },
 
     render: function render() {
-      var component = this.state.requestedFolder ? React.createElement(FileManagerComponent, { pollInterval: "30000", folder: this.state.requestedFolder }) : React.createElement(FolderManagerComponent, { folderRequested: this.folderRequested });
       return React.createElement(
-        "div",
+        'div',
         null,
         React.createElement(
-          "h1",
+          'h1',
           null,
-          "File Browser"
+          'File Browser ',
+          React.createElement(Nav, null)
         ),
-        React.createElement(Nav, { goHome: this.clearFolder }),
-        component
+        this.props.children
       );
     }
   });
 
-  React.render(React.createElement(App, null), document.getElementById("app"));
+  React.render(React.createElement(
+    Router,
+    null,
+    React.createElement(
+      Route,
+      { path: '/', component: App },
+      React.createElement(
+        Route,
+        { path: 'folders', component: FolderManagerComponent },
+        React.createElement(Route, { path: '/folders/:folderId', component: FileManagerComponent })
+      )
+    )
+  ), document.getElementById("app"));
 });

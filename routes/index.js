@@ -11,7 +11,7 @@ router.get('/folders', folders.listFolders);
 router.post('/folders', folders.createFolder);
 
 
-router.get('/files', files.listFiles);
+router.get('/files', folders.getFolder, files.listFiles);
 router.post('/files', files.parseFiles, files.upload);
 router.get('/files/:fileId', files.fileExists, files.getFile);
 

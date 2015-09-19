@@ -31,3 +31,20 @@ module.exports.createFolder = function(req, res, next){
     res.json(newFolder);
   });
 };
+
+module.exports.getFolder = function(req, res, next) {
+  var folder  = req.query.folder ? req.query.folder : null;
+
+  if(folder) {
+    FolderModel.find({"_id": folder}, function(err, folders){
+      if(err) { return next(err); }
+      if(!folders.length) { return next(); }
+      
+      req.folder = folders[0];
+      next();
+    });
+  }
+  else {
+    next();
+  }
+};
